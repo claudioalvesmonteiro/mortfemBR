@@ -7,8 +7,6 @@
 # #usefreesoftware                         #
 #------------------------------------------#
 
-# opa
-
 #-------------------------------------#
 # Criar Banco de Mortalidade Feminina #
 #-------------------------------------#
@@ -21,7 +19,6 @@ data_fem <- read.csv("data_mort_fem.csv", sep = ";", stringsAsFactors = F)
 
 # extrair numeros da variavel municipio e atribuir a var codigo
 data_fem$code_muni <- as.numeric(gsub("([0-9]+).*$", "\\1", data_fem$municipio))
-
 
 #carregar banco mortalidade feminina (2015)
 data_fem_2015 <- read.csv("data_mort_fem_2015.csv", sep= ";", stringsAsFactors = F)
@@ -43,7 +40,7 @@ data_fem <- merge(data_fem, data_fem_2015, by = "code_muni")
 #----------------------------------#
 
 # definir pasta de trabalho para captura
-setwd("C:/Users/MONTEIRO_/Documents/Analytique/Consultoria/Carol/Elaboração Banco de Dados/metadados")
+setwd("C:/Users/MONTEIRO_/Documents/Analytique/Consultoria/Carol/Elabora??o Banco de Dados/metadados")
 
 # ler banco 
 data_var <- read.csv("data_carol_atualizado3.csv",  sep = ";", stringsAsFactors = F)
@@ -76,8 +73,8 @@ data_fem <- data_fem[, - 34]
 data_fem <- data_fem[, c("code_muni","Municipio","UF","Nome_UF",
                          "X2010", "X2011", "X2012", "X2013", "X2014","obitos", 
                          "IDHM", "Pop_2010", "log_pop_2010", "log_distancia_capital",
-                         "code_muni2", "municipio.x","metropolitano","MicrorregiãoGeográfica",
-                         "MicrorregiãoGeográfica_Nome", "Distrito","Distrito_Nome" ,"regiao",
+                         "code_muni2", "municipio.x","metropolitano","Microrregi?oGeogr?fica",
+                         "Microrregi?oGeogr?fica_Nome", "Distrito","Distrito_Nome" ,"regiao",
                          "MUNICIPIOX", "MUNICIPIOY", "CAPITALX", "CAPITALY"
 )]
 
@@ -103,7 +100,7 @@ data_fem <- data.frame(manipul_data, data_fem[,c(1:4, 11:26)])
 data_fem_final <- data_fem[, c("code_muni","Municipio","UF","Nome_UF",
                                "X2010", "X2011", "X2012", "X2013", "X2014","obitos", 
                                "IDHM", "Pop_2010", "log_pop_2010", "log_distancia_capital",  "code_muni2", 
-                               "municipio.x","metropolitano","MicrorregiãoGeográfica", "MicrorregiãoGeográfica_Nome",
+                               "municipio.x","metropolitano","Microrregi?oGeogr?fica", "Microrregi?oGeogr?fica_Nome",
                                "regiao","MUNICIPIOX", "MUNICIPIOY", "CAPITALX", "CAPITALY"
 )]
 
