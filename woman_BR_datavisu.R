@@ -8,51 +8,55 @@
 #------------------------------------------#
 # #usefreesoftware                         #
 #------------------------------------------#
+# instalar pacotes necessarios
+# install.packages(c("readr","plyr", "rgdal", "ggplot2", "ggmap", "maps", "mapdata", "raster"), dependencies = T )
 
-#==== MAP FUNCTION ====#
+# carregar pacotes
+library(readr)
+library(plyr)
+library(rgdal)
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(mapdata)
+library(raster)
 
-mapa.funcao <- function(shape, data, variable) { 
+# carregar dados
+shp_bracity <- shapefile("Original Data/Geodata/bra_cities_2010/municipios_2010.shp")
+
+# load data
+library(readr)
+data_women <- read_delim("Data Analysis/data_women.csv", 
+                         ";", escape_double = FALSE, locale = locale(encoding = "latin1"), 
+                         trim_ws = TRUE)
+data_women$
+#---- carregar shape dos bairros ----#
+
+# converter shapefile em dataframe para ser usado pelo ggplot2
+shp_bracity@data$id <- rownames(shp_bracity@data)
+shapefile_points <- fortify(shp_bracity, region = "id")
+ 
+# juntar dados e shapedata
+shp_bracity <- join(shapefile_points, shp_bracity@data, by="id")
+
+#------ merge data and shape ------#
+shp_bracity$city_code2 <- shp_bracity$codigo_ibg
+  
+  
+#==== MAP ====#
+
   library(ggrepel)
   library(purrr)
   library(ggplot2)
   library(stringi)
   
   
-  # function to create merge string based on similarity
-  best_match= function(string_vector,string_replacement){
-    s<-string_replacement %>% 
-      purrr::map_int(~{
-        .x %>% 
-          RecordLinkage::levenshteinSim(string_vector) %>%
-          match(max(.),.)
-      })
-    string_vector[s] = string_replacement
-    return(string_vector)
-  }
+  shp_data <- merge(shp_bracity, data_women, by = "city_code2", all = T)
   
-  data$EBAIRRNOME = data$Localidade
-  data$EBAIRRNOME = toupper(data$EBAIRRNOME)
-  data$EBAIRRNOME = stri_trans_general(data$EBAIRRNOME , "Latin-ASCII")
-  data$EBAIRRNOME = best_match(data$EBAIRRNOME, shape$EBAIRRNOME)
-  data$variavel <- variable
-  data$variavel[is.na(data$variavel)] <- 0
-  
-  # merge data with shapefile
-  shp_data <- merge(shape, data, by = "EBAIRRNOME", all = T)
-  
-  # definir labels no mapa
-  shp_data <- shp_data[order(shp_data$variavel),]
-  shp_data$bairros_detasq <- 1
-  #shp_data$bairros_detasq[1:5] <- ""
-  shp_data$bairros_detasq[c(length(shp_data)-5):c(length(shp_data))] <- ""
-  
-  shp_data$bairros_detasq <- with(shp_data, paste0(shp_data$bairros_detasq, shp_data$Localidade))
-  shp_data$bairros_detasq_cod <- grepl(shp_data$bairros_detasq, pattern = "1")
-  shp_data$bairros_detasq[shp_data$bairros_detasq_cod == TRUE ] <- ""
   
   # tranformar shapefile em polygonsdataframe
-  data_fortity <- fortify(shp_data, region = "Localidade")
-  Localidade <- shp_data@data$Localidade
+  data_fortity <- fortify(shp_data, region = "nome")
+  Localidade <- shp_dat
   
   # extrair centroides dos poligonos
   centroids.df <- as.data.frame(coordinates(shp_data))
@@ -64,7 +68,7 @@ mapa.funcao <- function(shape, data, variable) {
   
   map_dataframe <- data.frame(Localidade, variavel, centroids.df, nomes_centroides)
   
-  plot <- ggplot(data = map_dataframe, aes(map_id = Localidade)) + 
+  ggplot(data = shp_data, aes(map_id = Localidade)) + 
     geom_map(aes(fill = shp_data$variavel), colour = grey(0.85),  map = data_fortity) +
     expand_limits(x = data_fortity$long, y = data_fortity$lat) + 
     # scale_fill_gradient(colours=inferno(10, alpha = 1, begin = 1, end = 0))+
