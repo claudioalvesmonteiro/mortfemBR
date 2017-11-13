@@ -29,19 +29,16 @@ library(readr)
 data_women <- read_delim("Data Analysis/data_women.csv", 
                          ";", escape_double = FALSE, locale = locale(encoding = "latin1"), 
                          trim_ws = TRUE)
-data_women$
-#---- carregar shape dos bairros ----#
 
-# converter shapefile em dataframe para ser usado pelo ggplot2
-shp_bracity@data$id <- rownames(shp_bracity@data)
-shapefile_points <- fortify(shp_bracity, region = "id")
- 
-# juntar dados e shapedata
-shp_bracity <- join(shapefile_points, shp_bracity@data, by="id")
+#---- create variable ----#
+data_women$prop_mortfem_2015_2 <- (data_women$abs_mort_fem_2015 / data_women$pop_2010) *10000
+data_women$abs_10to15 <- data_women$abs_mort_fem_2010 + data_women$abs_mort_fem_2011 +
+  data_women$abs_mort_fem_2012 + data_women$abs_mort_fem_2013 + data_women$abs_mort_fem_2014 +
+  data_women$abs_mort_fem_2015
 
 #------ merge data and shape ------#
 shp_bracity$city_code2 <- shp_bracity$codigo_ibg
-  
+shp_bracity <- merge(shp_bracity, data_women, by = "city_code2", all = T)
   
 #==== MAP ====#
 
@@ -50,36 +47,42 @@ shp_bracity$city_code2 <- shp_bracity$codigo_ibg
   library(ggplot2)
   library(stringi)
   
-  
-  shp_data <- merge(shp_bracity, data_women, by = "city_code2", all = T)
-  
-  
   # tranformar shapefile em polygonsdataframe
-  data_fortity <- fortify(shp_data, region = "nome")
-  Localidade <- shp_dat
+  fort_brcity <- fortify(shp_bracity, region = "id")
+  fort_data1 <- join(fort_brcity, shp_bracity@data, by = "id")
   
-  # extrair centroides dos poligonos
-  centroids.df <- as.data.frame(coordinates(shp_data))
-  names(centroids.df) <- c("Longitude", "Latitude")  #more sensible column Localidades
-  
-  # This shapefile contained population data, let's plot it.
-  variavel <- shp_data@data$variavel
-  nomes_centroides <- shp_data$bairros_detasq
-  
-  map_dataframe <- data.frame(Localidade, variavel, centroids.df, nomes_centroides)
-  
-  ggplot(data = shp_data, aes(map_id = Localidade)) + 
-    geom_map(aes(fill = shp_data$variavel), colour = grey(0.85),  map = data_fortity) +
-    expand_limits(x = data_fortity$long, y = data_fortity$lat) + 
+  ggplot(data = fort_data1, aes(map_id = fort_data1$nome)) + 
+    geom_map(aes(fill = fort_data1$prop_mortfem_2015_2), colour = "grey",  map = fort_data1) +
     # scale_fill_gradient(colours=inferno(10, alpha = 1, begin = 1, end = 0))+
     scale_fill_gradient(name = "" , low=	"#ffad60", high= "#4c0000")+
-    geom_label_repel(aes(label = nomes_centroides, x = Longitude, y = Latitude),
-                     size = 3, color = "black") + #add labels at centroids
     coord_fixed(1) +
     #labs(title = title)
     theme_nothing(legend = T)
-  return(plot)
-}
+  
+#===== PROPORTION
+  plotbr1 <- ggplot(fort_data1,  aes(x = long, y = lat, group = group)) + 
+    geom_polygon(aes(fill = fort_data1$prop_mortfem_2015_2 
+                     #color = NA
+    )) + 
+    scale_fill_gradient(name = "Proportion" , low=	"lightblue", high= "darkblue")+
+    coord_equal()  +
+    labs(title = "Women Death by 1000 hab in Brazil (2015)")+
+    theme_nothing(legend = T)
+  plotbr1
 
-acid2 <- mapa.funcao(shp_recife, acid_bairro2015, acid_bairro2015$Freq)
-ggsave("scid_bairros_2015_2.png", acid2, width = 6, height = 9, units = "in")
+  ggsave("plotbr1.png", plotbr1, width = 7, height = 7, units = "in")
+  
+#==== ABSOLUTE
+
+  plotbr2 <- ggplot(fort_data1,  aes(x = long, y = lat, group = group)) + 
+    geom_polygon(aes(fill = fort_data1$abs_10to15 
+                     #color = NA
+    )) + 
+    scale_fill_gradient(name = "Death" , low=	"lightblue", high= "darkblue")+
+    coord_equal()  +
+    labs(title = "Women Death by City in Brazil (2010-2015)")+
+    theme_nothing(legend = T)
+  plotbr2
+  
+  ggsave("plotbr2.png", plotbr2, width = 7, height = 7, units = "in")
+  
