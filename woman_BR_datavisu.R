@@ -58,7 +58,9 @@ shp_bracity <- merge(shp_bracity, data_women, by = "city_code2", all = T)
     coord_fixed(1) +
     #labs(title = title)
     theme_nothing(legend = T)
-  
+
+setwd()
+
 #===== PROPORTION
   plotbr1 <- ggplot(fort_data1,  aes(x = long, y = lat, group = group)) + 
     geom_polygon(aes(fill = fort_data1$prop_mortfem_2015_2 
