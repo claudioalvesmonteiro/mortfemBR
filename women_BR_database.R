@@ -55,14 +55,14 @@ multi_csv <- function(file_list)  {
 # Women death by age  #
 
 # set working directory
-setwd("~/Documents/Claudio/untitled folder/womandeathBR/Original Data/Woman Death by Age/")
+setwd("Original Data/Woman Death by Age/")
 
 # load data
 file_list1 <- list.files()
 death_age_data <- multi_xls(file_list1)
 
 # extrair numeros da variavel municipio e atribuir a var codigo
-death_age_data$code_muni <- as.numeric(gsub("([0-9]+).*$", "\\1", death_age_data$MunicÃ­pio))
+death_age_data$code_muni <- as.numeric(gsub("([0-9]+).*$", "\\1", death_age_data$Município))
 
 # filter NA data
 death_age_data <- death_age_data[!is.na(death_age_data$code_muni), ]
@@ -81,14 +81,14 @@ colnames(death_age_data) <- c("wom_violentdeath_1", "wom_violentdeath_1to4", "wo
 # Women population by age  #
 
 # set working directory
-setwd("~/Documents/Claudio/untitled folder/womandeathBR/Original Data/Woman Population by Age")
+setwd("~/GitProjects/womendeathBR/womendeathBR/Original Data/Woman Population by Age")
 
 # load data
 file_list4 <- list.files()
 population_age_data <- multi_xls(file_list4)
 
 # extrair numeros da variavel municipio e atribuir a var codigo
-population_age_data$code_muni <- as.numeric(gsub("([0-9]+).*$", "\\1", population_age_data$MunicÃ­pio))
+population_age_data$code_muni <- as.numeric(gsub("([0-9]+).*$", "\\1", population_age_data$Município))
 
 # filter NA data
 population_age_data <- population_age_data[!is.na(population_age_data$code_muni), ]
@@ -111,7 +111,7 @@ population_age_data <- population_age_data[!population_age_data$wom_pop_total ==
 # Proportion of Families With Woman Responsible  #
 
 # set working directory
-setwd("~/Documents/Claudio/untitled folder/womandeathBR/Original Data/Proportion of Families With Woman Responsible")
+setwd("~/GitProjects/womendeathBR/womendeathBR/Original Data/Proportion of Families With Woman Responsible")
 
 # load data
 file_list5 <- list.files()
