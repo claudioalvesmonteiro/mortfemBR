@@ -8,10 +8,11 @@
 #----------------------------------------------------#
 
 # install.packages
-# install.packages(c("readxl", "readODS", "stringi"))
+# install.packages(c("readxl", "readODS", "stringi", "dplyr"))
 
 # load packages
 library(stringi)
+library(dplyr)
 
 #==================================#
 # Functions for manipulating data  #
@@ -36,7 +37,6 @@ multi_xls <- function(file_list)  {
 
 # function for load multiple csv datasets 
 multi_csv <- function(file_list)  {
-  library(readODS)
   for (file in file_list){
     # if the merged dataset doesn't exist, create it
     if (!exists("dataset")){
@@ -139,7 +139,7 @@ woman_family_data <- woman_family_data[!duplicated(woman_family_data$code_muni),
 #--------------------------------------#
 
 # set working directory
-setwd("~/Documents/Claudio/untitled folder/womandeathBR/Original Data/Data From AtlasBrasil")
+setwd("~/GitProjects/womendeathBR/womendeathBR/Original Data/Data From AtlasBrasil")
 
 # import
 atlas_data <- read_xls("data_atlasbrasil.xls")
@@ -170,8 +170,7 @@ women_death_database <- merge(women_death_database, atlas_data, by = "code_muni"
 #------------------------------#
 # women death by 10.000 hab    #
 
-women_death_database <- mutate(women_death_database, wom_death_10000hab = (wom_violentdeath_total / wom_pop_total) * 10000)
-
+women_death_database <- mutate(women_death_database, wom_death_100.000hab = (wom_violentdeath_total / wom_pop_total) * 100000)
 
 
 
